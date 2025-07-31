@@ -69,7 +69,13 @@ export function transformArticle(article: NewsArticle): Article {
       return fallbackImage;
     }
     
-    // If it's already a full URL, return as is (including replicate.delivery)
+    // Check if it's a replicate.delivery URL (these require auth headers and cannot be used directly)
+    if (imagePath.includes('replicate.delivery')) {
+      console.log(`Replicate.delivery URL detected for article "${title}", using fallback image: ${imagePath}`);
+      return fallbackImage;
+    }
+    
+    // If it's already a full URL, return as is
     if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
       return imagePath;
     }
