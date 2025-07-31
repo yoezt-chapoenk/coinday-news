@@ -1,11 +1,9 @@
-'use client';
-
-import { useState, useEffect } from 'react';
+import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import Image from 'next/image';
 import Link from 'next/link';
 import { getArticleBySlug, getRelatedArticles, getArticles } from '@/lib/articles';
 import ArticleCard from '@/components/ArticleCard';
+import ArticleImage from '@/components/ArticleImage';
 import { Article } from '@/lib/types';
 
 interface ArticlePageProps {
@@ -14,48 +12,66 @@ interface ArticlePageProps {
   };
 }
 
-export default function ArticlePage({ params }: ArticlePageProps) {
-  const [article, setArticle] = useState<Article | null>(null);
-  const [relatedArticles, setRelatedArticles] = useState<Article[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [imageError, setImageError] = useState(false);
-  const fallbackImage = 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=400&fit=crop&auto=format';
+export async function generateStaticParams() {
+  const articles = await getArticles();
+  return articles.map((article) => ({
+    slug: article.slug,
+  }));
+}
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const articleData = await getArticleBySlug(params.slug);
-        
-        if (!articleData) {
-          notFound();
-          return;
-        }
-
-        setArticle(articleData);
-        const related = await getRelatedArticles(articleData, 3);
-        setRelatedArticles(related);
-      } catch (error) {
-        console.error('Error fetching article:', error);
-        notFound();
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchData();
-  }, [params.slug]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-        <div className="text-white">Loading...</div>
-      </div>
-    );
+export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
+  const article = await getArticleBySlug(params.slug);
+  
+  if (!article) {
+    return {
+      title: 'Article Not Found - Coinday',
+      description: 'The requested article could not be found.',
+    };
   }
 
+  return {
+    title: `${article.title} - Coinday`,
+    description: article.excerpt || article.content.substring(0, 160) + '...',
+    keywords: `${article.category}, ${article.title}, news, coinday`,
+    authors: [{ name: article.author || 'Coinday Team' }],
+    openGraph: {
+      title: `${article.title} - Coinday`,
+      description: article.excerpt || article.content.substring(0, 160) + '...',
+      url: `https://coinday.com/article/${article.slug}`,
+      siteName: 'Coinday',
+      images: [
+        {
+          url: article.imageUrl || '/og-image.png',
+          width: 1200,
+          height: 630,
+          alt: article.title,
+        },
+      ],
+      locale: 'en_US',
+      type: 'article',
+      publishedTime: article.publishedAt,
+      authors: [article.author || 'Coinday Team'],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${article.title} - Coinday`,
+      description: article.excerpt || article.content.substring(0, 160) + '...',
+      images: [article.imageUrl || '/og-image.png'],
+    },
+  };
+}
+
+export default async function ArticlePage({ params }: ArticlePageProps) {
+  const article = await getArticleBySlug(params.slug);
+  
   if (!article) {
     notFound();
   }
+
+  const relatedArticles = await getRelatedArticles(article, 3);
+  const fallbackImage = 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=400&fit=crop&auto=format';
+
+
   
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -189,14 +205,14 @@ export default function ArticlePage({ params }: ArticlePageProps) {
         <div className="container-custom mb-12">
           <div className="max-w-4xl mx-auto">
             <div className="relative h-64 md:h-96 lg:h-[500px] rounded-lg overflow-hidden">
-              <Image
-                src={imageError ? fallbackImage : article.imageUrl}
+              <ArticleImage
+                src={article.imageUrl}
                 alt={article.title}
+                fallbackSrc={fallbackImage}
                 fill
                 className="object-cover"
                 priority
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
-                onError={() => setImageError(true)}
               />
             </div>
           </div>

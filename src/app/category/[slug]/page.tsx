@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getArticlesByCategory, getCategories } from '@/lib/articles';
 import ArticleList from '@/components/ArticleList';
+import ArticleCard from '@/components/ArticleCard';
 import CategoryList from '@/components/CategoryList';
 import SearchBar from '@/components/SearchBar';
 
@@ -182,10 +183,10 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                       <h2 className="text-2xl font-bold text-white mb-8">Featured {category.name} Stories</h2>
                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         {featuredArticles.map((article) => (
-                          <ArticleList 
+                          <ArticleCard 
                             key={article.id}
-                            articles={[article]} 
-                            showFeatured={true}
+                            article={article}
+                            featured={true}
                           />
                         ))}
                       </div>

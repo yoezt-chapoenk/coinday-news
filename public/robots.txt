@@ -1,0 +1,21 @@
+User-agent: *
+Allow: /
+
+# Disallow admin pages
+Disallow: /admin/
+Disallow: /api/
+
+# Allow all other pages
+Allow: /article/
+Allow: /category/
+Allow: /latest
+Allow: /categories
+Allow: /search
+Allow: /contact
+Allow: /privacy-policy
+
+# Sitemap location
+Sitemap: https://coinday.vercel.app/sitemap.xml
+
+# Crawl delay (optional)
+Crawl-delay: 1
