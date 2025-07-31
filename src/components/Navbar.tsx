@@ -37,11 +37,11 @@ const Navbar = () => {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <Image 
-              src="/og-image.svg" 
+              src="/logo.svg" 
               alt="Coinday Logo" 
-              width={120}
-              height={63}
-              className="h-8 w-auto object-contain"
+              width={32}
+              height={32}
+              className="w-8 h-8 object-contain"
             />
             <span className="text-2xl font-bold text-white">Coinday</span>
           </Link>
