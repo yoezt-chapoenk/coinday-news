@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import type { User } from '@supabase/auth-helpers-nextjs'
+import { createClientComponentClient } from '@/lib/supabase'
+import type { User } from '@supabase/supabase-js'
 // Removed missing UI button import - using standard HTML button
 
 export default function AdminLayout({

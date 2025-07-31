@@ -15,7 +15,7 @@ Allow: /contact
 Allow: /privacy-policy
 
 # Sitemap location
-Sitemap: https://coinday.vercel.app/sitemap.xml
+Sitemap: https://www.coinday.io/sitemap.xml
 
 # Crawl delay (optional)
 Crawl-delay: 1
