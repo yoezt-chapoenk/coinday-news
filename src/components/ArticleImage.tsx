@@ -28,11 +28,16 @@ export default function ArticleImage({
 }: ArticleImageProps) {
   const [imageError, setImageError] = useState(false);
 
+  const handleImageError = () => {
+    console.log(`Image failed to load: ${src}, using fallback: ${fallbackSrc}`);
+    setImageError(true);
+  };
+
   const imageProps = {
     src: imageError ? fallbackSrc : src,
     alt: alt || '',
     className,
-    onError: () => setImageError(true),
+    onError: handleImageError,
     priority,
     ...(fill ? { fill: true, sizes } : { width: width || 800, height: height || 400 })
   };

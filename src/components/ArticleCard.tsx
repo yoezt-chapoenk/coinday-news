@@ -15,6 +15,11 @@ const ArticleCard = ({ article, featured = false, className = '' }: ArticleCardP
   const [imageError, setImageError] = useState(false);
   const fallbackImage = 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=400&fit=crop&auto=format';
   
+  const handleImageError = () => {
+    console.log(`Article image failed to load for "${article.title}": ${article.imageUrl}`);
+    setImageError(true);
+  };
+  
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
@@ -35,7 +40,7 @@ const ArticleCard = ({ article, featured = false, className = '' }: ArticleCardP
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-300"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              onError={() => setImageError(true)}
+              onError={handleImageError}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
             <div className="absolute bottom-4 left-4 right-4">
@@ -78,7 +83,7 @@ const ArticleCard = ({ article, featured = false, className = '' }: ArticleCardP
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-300"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            onError={() => setImageError(true)}
+            onError={handleImageError}
           />
           <div className="absolute top-4 left-4">
             <span className="category-tag">

@@ -65,6 +65,8 @@ export function transformArticle(article: NewsArticle): Article {
   const isValidImageUrl = (url: string | null | undefined): boolean => {
     if (!url || url.trim() === '') return false;
     try {
+      // Allow relative URLs starting with / and absolute URLs
+      if (url.startsWith('/')) return true;
       new URL(url);
       return url.startsWith('http://') || url.startsWith('https://');
     } catch {
@@ -72,6 +74,16 @@ export function transformArticle(article: NewsArticle): Article {
     }
   };
   
+  // Debug logging for image URL issues
+  const finalImageUrl = isValidImageUrl(article.image_url) 
+    ? article.image_url! 
+    : 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=400&fit=crop&auto=format';
+  
+  // Log when using fallback image
+  if (!isValidImageUrl(article.image_url)) {
+    console.log(`Article "${title}" using fallback image. Original image_url:`, article.image_url);
+  }
+
   return {
     id: article.id.toString(),
     title,
@@ -82,7 +94,7 @@ export function transformArticle(article: NewsArticle): Article {
     publishedAt: article.published_at || article.created_at,
     category: categories[0] || 'General',
     tags: categories,
-    imageUrl: isValidImageUrl(article.image_url) ? article.image_url! : 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=400&fit=crop&auto=format',
+    imageUrl: finalImageUrl,
     readTime,
     featured: false // We can add logic later to determine featured articles
   };
