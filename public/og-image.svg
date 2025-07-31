@@ -1,0 +1,21 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#000000"/>
+  
+  <!-- Main Logo/Icon -->
+  <rect x="500" y="215" width="200" height="200" rx="20" fill="#FFFFFF"/>
+  <circle cx="600" cy="315" r="60" fill="#000000"/>
+  <rect x="570" y="245" width="60" height="20" fill="#000000"/>
+  <rect x="570" y="365" width="60" height="20" fill="#000000"/>
+  
+  <!-- Site Title -->
+  <text x="600" y="480" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Coinday</text>
+  
+  <!-- Tagline -->
+  <text x="600" y="520" font-family="Arial, sans-serif" font-size="24" fill="#CCCCCC" text-anchor="middle">Modern News, Minimal Design</text>
+  
+  <!-- Decorative Elements -->
+  <circle cx="200" cy="150" r="3" fill="#333333"/>
+  <circle cx="1000" cy="480" r="3" fill="#333333"/>
+  <circle cx="150" cy="450" r="2" fill="#333333"/>
+  <circle cx="1050" cy="180" r="2" fill="#333333"/>
+</svg>
