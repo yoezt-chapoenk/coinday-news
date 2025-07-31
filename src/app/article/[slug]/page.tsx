@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
       siteName: 'Coinday',
       images: [
         {
-          url: article.imageUrl || '/og-image.png',
+          url: article.image_url || '/og-image.png',
           width: 1200,
           height: 630,
           alt: article.title,
@@ -56,7 +56,7 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
       card: 'summary_large_image',
       title: `${article.title} - Coinday`,
       description: article.excerpt || article.content.substring(0, 160) + '...',
-      images: [article.imageUrl || '/og-image.png'],
+      images: [article.image_url || '/og-image.png'],
     },
   };
 }
@@ -89,7 +89,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     '@type': 'NewsArticle',
     headline: article.title,
     description: article.excerpt,
-    image: article.imageUrl,
+    image: article.image_url,
     author: {
       '@type': 'Person',
       name: 'Admin',
@@ -206,7 +206,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           <div className="max-w-4xl mx-auto">
             <div className="relative h-64 md:h-96 lg:h-[500px] rounded-lg overflow-hidden">
               <ArticleImage
-                src={article.imageUrl}
+                src={article.image_url}
                 alt={article.title}
                 fallbackSrc={fallbackImage}
                 fill

@@ -27,7 +27,7 @@ export interface Article {
   publishedAt: string;
   category: string;
   tags: string[];
-  imageUrl: string;
+  image_url: string;
   readTime: number;
   featured: boolean;
 }
@@ -115,7 +115,7 @@ export function transformArticle(article: NewsArticle): Article {
     publishedAt: article.published_at || article.created_at,
     category: categories[0] || 'General',
     tags: categories,
-    imageUrl: finalImageUrl,
+    image_url: finalImageUrl,
     readTime,
     featured: false // We can add logic later to determine featured articles
   };

@@ -16,7 +16,7 @@ const ArticleCard = ({ article, featured = false, className = '' }: ArticleCardP
   const fallbackImage = 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=400&fit=crop&auto=format';
   
   const handleImageError = () => {
-    console.log(`Article image failed to load for "${article.title}": ${article.imageUrl}`);
+    console.log(`Article image failed to load for "${article.title}": ${article.image_url}`);
     setImageError(true);
   };
   
@@ -35,7 +35,7 @@ const ArticleCard = ({ article, featured = false, className = '' }: ArticleCardP
         <Link href={`/article/${article.slug}`} className="block">
           <div className="relative h-64 md:h-80 overflow-hidden rounded-t-lg">
             <Image
-              src={imageError ? fallbackImage : article.imageUrl}
+              src={imageError ? fallbackImage : article.image_url}
               alt={article.title}
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -78,7 +78,7 @@ const ArticleCard = ({ article, featured = false, className = '' }: ArticleCardP
       <Link href={`/article/${article.slug}`} className="block">
         <div className="relative h-48 overflow-hidden rounded-t-lg">
           <Image
-            src={imageError ? fallbackImage : article.imageUrl}
+            src={imageError ? fallbackImage : article.image_url}
             alt={article.title}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-300"

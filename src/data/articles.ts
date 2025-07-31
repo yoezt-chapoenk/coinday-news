@@ -8,7 +8,7 @@ export interface Article {
   publishedAt: string;
   category: string;
   tags: string[];
-  imageUrl: string;
+  image_url: string;
   readTime: number;
   featured: boolean;
 }
