@@ -31,7 +31,7 @@ const Footer = () => {
           <div className="col-span-1 md:col-span-2">
             <Link href="/" className="flex items-center space-x-2 mb-4">
               <Image 
-                src="https://ik.imagekit.io/coinday/coinday.io-logo-2.png?updatedAt=1753990031399" 
+                src="/favicon.svg" 
                 alt="Coinday Logo" 
                 width={32}
                 height={32}
