@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS news_articles (
   content TEXT NOT NULL,
   source TEXT NOT NULL,
   published_date TIMESTAMP WITH TIME ZONE NOT NULL,
+  image_url TEXT,
   approved BOOLEAN DEFAULT FALSE,
   categories TEXT[] DEFAULT '{}',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -22,8 +23,9 @@ CREATE INDEX IF NOT EXISTS idx_news_articles_created_at ON news_articles(created
 -- Create an index on updated_at for sorting
 CREATE INDEX IF NOT EXISTS idx_news_articles_updated_at ON news_articles(updated_at);
 
--- Add categories column if it doesn't exist (for existing tables)
+-- Add columns if they don't exist (for existing tables)
 ALTER TABLE news_articles ADD COLUMN IF NOT EXISTS categories TEXT[] DEFAULT '{}';
+ALTER TABLE news_articles ADD COLUMN IF NOT EXISTS image_url TEXT;
 
 -- Create an index on categories for faster filtering
 CREATE INDEX IF NOT EXISTS idx_news_articles_categories ON news_articles USING GIN(categories);
@@ -64,6 +66,7 @@ INSERT INTO news_articles (
   content,
   source,
   published_date,
+  image_url,
   approved
 ) VALUES 
 (
@@ -73,6 +76,7 @@ INSERT INTO news_articles (
   'Bitcoin, the world''s largest cryptocurrency by market capitalization, has reached a new all-time high today, breaking through previous resistance levels and demonstrating remarkable resilience in the current market environment. The surge comes amid increased institutional adoption and growing mainstream acceptance of digital assets.',
   'CryptoNews',
   '2024-01-15 10:30:00+00',
+  'https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=800&h=400&fit=crop&auto=format',
   false
 ),
 (
@@ -82,6 +86,7 @@ INSERT INTO news_articles (
   'The Ethereum network has seen a significant increase in staking rewards following recent network upgrades. Validators are now earning higher yields, making staking more attractive for long-term holders. This development is expected to further strengthen the network''s security and decentralization.',
   'EthereumDaily',
   '2024-01-14 14:20:00+00',
+  'https://images.unsplash.com/photo-1621761191319-c6fb62004040?w=800&h=400&fit=crop&auto=format',
   false
 ),
 (
@@ -91,6 +96,7 @@ INSERT INTO news_articles (
   'A leading decentralized finance (DeFi) protocol has announced the launch of groundbreaking new features that promise to revolutionize how users interact with decentralized financial services. The new features include advanced yield farming strategies, cross-chain compatibility, and enhanced security measures.',
   'DeFiTimes',
   '2024-01-13 09:15:00+00',
+  'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800&h=400&fit=crop&auto=format',
   true
 ),
 (
@@ -100,6 +106,7 @@ INSERT INTO news_articles (
   'After months of declining activity, the non-fungible token (NFT) market is showing clear signs of recovery. Trading volumes have increased significantly over the past week, with several high-profile collections seeing renewed interest from collectors and investors.',
   'NFTInsider',
   '2024-01-12 16:45:00+00',
+  'https://images.unsplash.com/photo-1634973357973-f2ed2657db3c?w=800&h=400&fit=crop&auto=format',
   true
 );
 

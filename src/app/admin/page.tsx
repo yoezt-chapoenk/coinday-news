@@ -10,6 +10,7 @@ interface NewsArticle {
   title: string;
   summary: string;
   content: string;
+  image_url?: string | null;
   rewritten_title?: string;
   rewritten_summary?: string;
   rewritten_content?: string;
