@@ -69,13 +69,7 @@ export function transformArticle(article: NewsArticle): Article {
       return fallbackImage;
     }
     
-    // Check for invalid or problematic URLs
-    if (imagePath.includes('replicate.delivery')) {
-      console.log(`Detected problematic replicate.delivery URL, using fallback for: ${imagePath}`);
-      return fallbackImage;
-    }
-    
-    // If it's already a valid full URL (not replicate.delivery), return as is
+    // If it's already a full URL, return as is (including replicate.delivery)
     if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
       return imagePath;
     }
