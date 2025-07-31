@@ -1,7 +1,28 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['images.unsplash.com', 'via.placeholder.com', 'replicate.delivery', 'cdn.sanity.io'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'via.placeholder.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'replicate.delivery',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.sanity.io',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.supabase.co',
+      },
+    ],
   },
 }
 

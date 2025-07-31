@@ -61,28 +61,49 @@ export function transformArticle(article: NewsArticle): Article {
   // Handle categories safely
   const categories = Array.isArray(article.categories) ? article.categories : [];
   
-  // Validate image URL
-  const isValidImageUrl = (url: string | null | undefined): boolean => {
-    if (!url || url.trim() === '') return false;
-    try {
-      // Allow relative URLs starting with / and absolute URLs
-      if (url.startsWith('/')) return true;
-      new URL(url);
-      return url.startsWith('http://') || url.startsWith('https://');
-    } catch {
-      return false;
+  // Function to build Supabase Storage URL
+  const buildSupabaseImageUrl = (imagePath: string | null | undefined): string => {
+    const fallbackImage = 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=400&fit=crop&auto=format';
+    
+    if (!imagePath || imagePath.trim() === '') {
+      return fallbackImage;
     }
+    
+    // Check for invalid or problematic URLs
+    if (imagePath.includes('replicate.delivery')) {
+      console.log(`Detected problematic replicate.delivery URL, using fallback for: ${imagePath}`);
+      return fallbackImage;
+    }
+    
+    // If it's already a valid full URL (not replicate.delivery), return as is
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+      return imagePath;
+    }
+    
+    // If it's a relative path starting with /, return as is
+    if (imagePath.startsWith('/')) {
+      return imagePath;
+    }
+    
+    // Build Supabase Storage URL
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    if (supabaseUrl) {
+      // Remove leading slash if present
+      const cleanPath = imagePath.startsWith('/') ? imagePath.slice(1) : imagePath;
+      return `${supabaseUrl}/storage/v1/object/public/article-images/${cleanPath}`;
+    }
+    
+    // Fallback if no Supabase URL
+    return fallbackImage;
   };
   
-  // Debug logging for image URL issues
-  const finalImageUrl = isValidImageUrl(article.image_url) 
-    ? article.image_url! 
-    : 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=400&fit=crop&auto=format';
+  const finalImageUrl = buildSupabaseImageUrl(article.image_url);
   
-  // Log when using fallback image
-  if (!isValidImageUrl(article.image_url)) {
-    console.log(`Article "${title}" using fallback image. Original image_url:`, article.image_url);
-  }
+  // Debug logging for image URL
+  console.log(`Article "${title}" image URL:`, {
+    original: article.image_url,
+    final: finalImageUrl
+  });
 
   return {
     id: article.id.toString(),
