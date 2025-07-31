@@ -31,12 +31,12 @@ const Footer = () => {
           <div className="col-span-1 md:col-span-2">
             <Link href="/" className="flex items-center space-x-2 mb-4">
               <Image 
-                src="/favicon.svg" 
-                alt="Coinday Logo" 
-                width={32}
-                height={32}
-                className="w-8 h-8 object-contain"
-              />
+              src="/og-image.svg" 
+              alt="Coinday Logo" 
+              width={120}
+              height={63}
+              className="h-8 w-auto object-contain"
+            />
               <span className="text-2xl font-bold text-white">Coinday</span>
             </Link>
             <p className="text-gray-400 mb-6 max-w-md">
