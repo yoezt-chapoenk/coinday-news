@@ -3,6 +3,7 @@ import '@fontsource/geist'
 import './globals.css'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import { ArticlesProvider } from '@/contexts/ArticlesContext'
 
 export const metadata: Metadata = {
   title: 'Coinday - Latest News & Updates',
@@ -59,11 +60,13 @@ export default function RootLayout({
         <link rel="manifest" href="/site.webmanifest" />
       </head>
       <body className="font-geist bg-black text-white min-h-screen flex flex-col antialiased">
-        <Navbar />
-        <main className="flex-grow">
-          {children}
-        </main>
-        <Footer />
+        <ArticlesProvider>
+          <Navbar />
+          <main className="flex-grow">
+            {children}
+          </main>
+          <Footer />
+        </ArticlesProvider>
       </body>
     </html>
   )

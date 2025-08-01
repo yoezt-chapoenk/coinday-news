@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { searchArticles, getTrendingTags, getCategories } from '@/lib/articles';
+import { useArticles } from '@/contexts/ArticlesContext';
 import { Article, Category } from '@/lib/types';
 import ArticleList from '@/components/ArticleList';
 import SearchBar from '@/components/SearchBar';
@@ -12,32 +12,32 @@ import Link from 'next/link';
 function SearchContent() {
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get('q') || '';
+  const { articles, categories, loading: contextLoading } = useArticles();
   
   const [query, setQuery] = useState(initialQuery);
   const [results, setResults] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [sortBy, setSortBy] = useState<'relevance' | 'date' | 'readTime'>('relevance');
   const [trendingTags, setTrendingTags] = useState<string[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
 
-  // Load trending tags and categories on component mount
+  // Extract trending tags from articles
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        const [tags, categoriesData] = await Promise.all([
-          getTrendingTags(),
-          getCategories()
-        ]);
-        setTrendingTags(tags);
-        setCategories(categoriesData);
-      } catch (error) {
-        console.error('Error loading data:', error);
-      }
-    };
-    loadData();
-   }, []);
+    if (!contextLoading && articles.length > 0) {
+      const tagCounts: { [key: string]: number } = {};
+      articles.forEach(article => {
+        article.tags?.forEach(tag => {
+          tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+        });
+      });
+      const trending = Object.entries(tagCounts)
+        .sort(([,a], [,b]) => b - a)
+        .slice(0, 10)
+        .map(([tag]) => tag);
+      setTrendingTags(trending);
+    }
+  }, [articles, contextLoading]);
 
-  const performSearch = useCallback(async (searchQuery: string) => {
+  const performSearch = useCallback((searchQuery: string) => {
     if (!searchQuery.trim()) {
       setResults([]);
       return;
@@ -45,7 +45,14 @@ function SearchContent() {
 
     setIsLoading(true);
     try {
-      let searchResults = await searchArticles(searchQuery);
+      const query = searchQuery.toLowerCase();
+      let searchResults = articles.filter(article => 
+        article.title.toLowerCase().includes(query) ||
+        article.excerpt.toLowerCase().includes(query) ||
+        article.content?.toLowerCase().includes(query) ||
+        article.tags?.some(tag => tag.toLowerCase().includes(query)) ||
+        article.categories?.some(cat => cat.name.toLowerCase().includes(query))
+      );
       
       // Sort results based on selected option
       if (sortBy === 'date') {
@@ -54,6 +61,13 @@ function SearchContent() {
         );
       } else if (sortBy === 'readTime') {
         searchResults = searchResults.sort((a, b) => a.readTime - b.readTime);
+      } else {
+        // Relevance sort - prioritize title matches
+        searchResults = searchResults.sort((a, b) => {
+          const aTitle = a.title.toLowerCase().includes(query) ? 1 : 0;
+          const bTitle = b.title.toLowerCase().includes(query) ? 1 : 0;
+          return bTitle - aTitle;
+        });
       }
       
       setResults(searchResults);
@@ -63,7 +77,7 @@ function SearchContent() {
     } finally {
       setIsLoading(false);
     }
-  }, [sortBy]);
+  }, [articles, sortBy]);
 
   // Load initial search results
   useEffect(() => {

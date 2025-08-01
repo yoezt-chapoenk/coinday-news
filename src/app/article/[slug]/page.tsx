@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { getArticleBySlug, getRelatedArticles, getArticles } from '@/lib/articles';
 import ArticleCard from '@/components/ArticleCard';
 import ArticleImage from '@/components/ArticleImage';
+import ArticleContent from '@/components/ArticleContent';
 import { Article } from '@/lib/types';
 
 interface ArticlePageProps {
@@ -224,10 +225,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
               {/* Main Content */}
               <div className="lg:col-span-3">
-                <div 
-                  className="prose prose-lg max-w-none"
-                  dangerouslySetInnerHTML={{ __html: article.content }}
-                />
+                <ArticleContent content={article.content} />
                 
                 {/* Share Buttons */}
                 <div className="mt-12 pt-8 border-t border-gray-800">

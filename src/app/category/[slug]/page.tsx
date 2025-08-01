@@ -1,10 +1,12 @@
-import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import { getArticlesByCategory, getCategories } from '@/lib/articles';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useArticles } from '@/contexts/ArticlesContext';
 import ArticleList from '@/components/ArticleList';
 import ArticleCard from '@/components/ArticleCard';
 import CategoryList from '@/components/CategoryList';
 import SearchBar from '@/components/SearchBar';
+import { Article, Category } from '@/lib/types';
 
 interface CategoryPageProps {
   params: {
@@ -12,66 +14,64 @@ interface CategoryPageProps {
   };
 }
 
-export async function generateStaticParams() {
-  const categories = await getCategories();
-  return categories.map((category) => ({
-    slug: category.slug,
-  }));
-}
+export default function CategoryPage({ params }: CategoryPageProps) {
+  const { articles, categories, loading } = useArticles();
+  const [category, setCategory] = useState<Category | null>(null);
+  const [categoryArticles, setCategoryArticles] = useState<Article[]>([]);
+  const [featuredArticles, setFeaturedArticles] = useState<Article[]>([]);
+  const [regularArticles, setRegularArticles] = useState<Article[]>([]);
 
-export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
-  const categories = await getCategories();
-  const category = categories.find(cat => cat.slug === params.slug);
-  
-  if (!category) {
-    return {
-      title: 'Category Not Found - Coinday',
-      description: 'The requested category could not be found.',
-    };
+  useEffect(() => {
+    if (!loading && categories.length > 0) {
+      const foundCategory = categories.find(cat => cat.slug === params.slug);
+      setCategory(foundCategory || null);
+    }
+  }, [categories, params.slug, loading]);
+
+  useEffect(() => {
+    if (!loading && articles.length > 0 && category) {
+      const filtered = articles.filter(article => 
+        article.category === category.slug
+      );
+      setCategoryArticles(filtered);
+      setFeaturedArticles(filtered.filter(article => article.featured));
+      setRegularArticles(filtered.filter(article => !article.featured));
+    }
+  }, [articles, category, params.slug, loading]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black">
+        <div className="container-custom py-12">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-700 rounded w-1/3 mb-4"></div>
+            <div className="h-4 bg-gray-800 rounded w-2/3 mb-8"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="bg-gray-800 rounded-lg h-48 mb-4"></div>
+                  <div className="h-4 bg-gray-700 rounded mb-2"></div>
+                  <div className="h-3 bg-gray-800 rounded w-3/4"></div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
-  const categoryArticles = await getArticlesByCategory(params.slug);
-
-  return {
-    title: `${category.name} News - Coinday`,
-    description: `${category.description}. Browse ${categoryArticles.length} articles in ${category.name}.`,
-    keywords: `${category.name}, news, articles, ${category.name.toLowerCase()} news`,
-    openGraph: {
-      title: `${category.name} News - Coinday`,
-      description: `${category.description}. Browse ${categoryArticles.length} articles in ${category.name}.`,
-      url: `https://coinday.com/category/${category.slug}`,
-      siteName: 'Coinday',
-      images: [
-        {
-          url: '/og-image.png',
-          width: 1200,
-          height: 630,
-          alt: `${category.name} News - Coinday`,
-        },
-      ],
-      locale: 'en_US',
-      type: 'website',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: `${category.name} News - Coinday`,
-      description: `${category.description}. Browse ${categoryArticles.length} articles in ${category.name}.`,
-      images: ['/og-image.png'],
-    },
-  };
-}
-
-export default async function CategoryPage({ params }: CategoryPageProps) {
-  const categories = await getCategories();
-  const category = categories.find(cat => cat.slug === params.slug);
-  
   if (!category) {
-    notFound();
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold text-white mb-4">Category Not Found</h1>
+          <p className="text-gray-400 mb-8">The requested category could not be found.</p>
+          <a href="/categories" className="btn-primary">Browse Categories</a>
+        </div>
+      </div>
+    );
   }
-
-  const categoryArticles = await getArticlesByCategory(params.slug);
-  const featuredArticles = categoryArticles.filter(article => article.featured);
-  const regularArticles = categoryArticles.filter(article => !article.featured);
 
   const jsonLd = {
     '@context': 'https://schema.org',

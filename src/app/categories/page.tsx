@@ -1,15 +1,11 @@
-import { Metadata } from 'next';
-import { getCategories } from '@/lib/articles';
+'use client';
+
+import { useArticles } from '@/contexts/ArticlesContext';
 import Link from 'next/link';
 import SearchBar from '@/components/SearchBar';
 
-export const metadata: Metadata = {
-  title: 'Categories - Coinday',
-  description: 'Browse articles by category. Find cryptocurrency and blockchain news organized by topics.',
-};
-
-export default async function CategoriesPage() {
-  const categories = await getCategories();
+export default function CategoriesPage() {
+  const { categories, loading } = useArticles();
 
   return (
     <div className="min-h-screen bg-black">
@@ -39,14 +35,28 @@ export default async function CategoriesPage() {
       <main className="container-custom py-12">
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-white mb-2">
-            All Categories ({categories.length})
+            All Categories ({loading ? '...' : categories.length})
           </h2>
           <p className="text-gray-400">
             Choose a category to explore related articles
           </p>
         </div>
         
-        {categories.length > 0 ? (
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="animate-pulse p-6 bg-gray-900 rounded-lg border border-gray-800">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="h-6 bg-gray-700 rounded w-3/4"></div>
+                  <div className="h-5 bg-gray-800 rounded w-16"></div>
+                </div>
+                <div className="h-4 bg-gray-800 rounded mb-2"></div>
+                <div className="h-4 bg-gray-800 rounded w-2/3 mb-4"></div>
+                <div className="h-4 bg-gray-800 rounded w-1/2"></div>
+              </div>
+            ))}
+          </div>
+        ) : categories.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {categories.map((category) => (
               <Link

@@ -1,19 +1,17 @@
 // Types for Supabase data
 export interface NewsArticle {
-  id: number;
-  title: string;
+  id: string; // UUID in database
+  original_title: string;
+  rewritten_title: string;
   summary: string;
   content: string;
+  source: string;
+  published_date: string;
   image_url?: string | null;
   approved: boolean;
   categories: string[];
   created_at: string;
-  updated_at?: string;
-  rewritten_title?: string | null;
-  rewritten_summary?: string | null;
-  rewritten_content?: string | null;
-  source?: string;
-  published_at?: string;
+  updated_at: string;
 }
 
 // Transformed article type for frontend
@@ -42,9 +40,9 @@ export interface Category {
 
 // Transform Supabase article to frontend article
 export function transformArticle(article: NewsArticle): Article {
-  const title = article.rewritten_title || article.title;
-  const content = article.rewritten_content || article.content;
-  const excerpt = article.rewritten_summary || article.summary;
+  const title = article.rewritten_title || article.original_title;
+  const content = article.content;
+  const excerpt = article.summary;
   
   // Generate slug from title (limit to first 50 characters for better URLs)
   const slug = title
@@ -65,17 +63,12 @@ export function transformArticle(article: NewsArticle): Article {
   const buildSupabaseImageUrl = (imagePath: string | null | undefined): string => {
     const fallbackImage = 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=400&fit=crop&auto=format';
     
+    // Only use fallback if image path is empty, null, or not a valid URL
     if (!imagePath || imagePath.trim() === '') {
       return fallbackImage;
     }
     
-    // Check if it's a replicate.delivery URL (these require auth headers and cannot be used directly)
-    if (imagePath.includes('replicate.delivery')) {
-      console.log(`Replicate.delivery URL detected for article "${title}", using fallback image: ${imagePath}`);
-      return fallbackImage;
-    }
-    
-    // If it's already a full URL, return as is
+    // If it's already a full URL (including replicate.delivery), return as is
     if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
       return imagePath;
     }
@@ -85,7 +78,7 @@ export function transformArticle(article: NewsArticle): Article {
       return imagePath;
     }
     
-    // Build Supabase Storage URL
+    // Build Supabase Storage URL for relative paths
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     if (supabaseUrl) {
       // Remove leading slash if present
@@ -112,7 +105,7 @@ export function transformArticle(article: NewsArticle): Article {
     excerpt,
     content,
     author: article.source || 'Coinday Team',
-    publishedAt: article.published_at || article.created_at,
+    publishedAt: article.published_date || article.created_at,
     category: categories[0] || 'General',
     tags: categories,
     image_url: finalImageUrl,

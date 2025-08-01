@@ -1,15 +1,11 @@
-import { Metadata } from 'next';
-import { getArticles } from '@/lib/articles';
+'use client';
+
+import { useArticles } from '@/contexts/ArticlesContext';
 import ArticleList from '@/components/ArticleList';
 import SearchBar from '@/components/SearchBar';
 
-export const metadata: Metadata = {
-  title: 'Latest Articles - Coinday',
-  description: 'Browse all the latest cryptocurrency and blockchain news articles.',
-};
-
-export default async function LatestPage() {
-  const articles = await getArticles();
+export default function LatestPage() {
+  const { articles, loading } = useArticles();
 
   return (
     <div className="min-h-screen bg-black">
@@ -39,14 +35,24 @@ export default async function LatestPage() {
       <main className="container-custom py-12">
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-white mb-2">
-            All Articles ({articles.length})
+            All Articles ({loading ? '...' : articles.length})
           </h2>
           <p className="text-gray-400">
             Browse through all our published articles
           </p>
         </div>
         
-        {articles.length > 0 ? (
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="animate-pulse">
+                <div className="bg-gray-800 rounded-lg h-48 mb-4"></div>
+                <div className="h-4 bg-gray-700 rounded mb-2"></div>
+                <div className="h-3 bg-gray-800 rounded w-3/4"></div>
+              </div>
+            ))}
+          </div>
+        ) : articles.length > 0 ? (
           <ArticleList articles={articles} />
         ) : (
           <div className="text-center py-16">

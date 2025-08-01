@@ -23,9 +23,9 @@ export async function getArticles(): Promise<Article[]> {
     // Filter out articles with missing required fields and transform
     return (data || [])
       .filter(article => {
-        const title = article.rewritten_title || article.title;
-        const summary = article.rewritten_summary || article.summary;
-        const content = article.rewritten_content || article.content;
+        const title = article.rewritten_title || article.original_title;
+        const summary = article.summary;
+        const content = article.content;
         return article && title && summary && content && title.trim() !== '' && summary.trim() !== '' && content.trim() !== '';
       })
       .map(transformArticle);
@@ -52,9 +52,9 @@ export async function getFeaturedArticles(): Promise<Article[]> {
 
     return (data || [])
       .filter(article => {
-        const title = article.rewritten_title || article.title;
-        const summary = article.rewritten_summary || article.summary;
-        const content = article.rewritten_content || article.content;
+        const title = article.rewritten_title || article.original_title;
+        const summary = article.summary;
+        const content = article.content;
         return article && title && summary && content && title.trim() !== '' && summary.trim() !== '' && content.trim() !== '';
       })
       .map(article => ({
@@ -84,9 +84,9 @@ export async function getArticlesByCategory(categorySlug: string): Promise<Artic
 
     return (data || [])
       .filter(article => {
-        const title = article.rewritten_title || article.title;
-        const summary = article.rewritten_summary || article.summary;
-        const content = article.rewritten_content || article.content;
+        const title = article.rewritten_title || article.original_title;
+        const summary = article.summary;
+        const content = article.content;
         return article && title && summary && content && title.trim() !== '' && summary.trim() !== '' && content.trim() !== '';
       })
       .map(transformArticle);
@@ -124,7 +124,7 @@ export async function searchArticles(query: string): Promise<Article[]> {
       .from('news_articles')
       .select('*')
       .eq('approved', true)
-      .or(`title.ilike.%${query}%,summary.ilike.%${query}%,content.ilike.%${query}%,rewritten_title.ilike.%${query}%,rewritten_summary.ilike.%${query}%,rewritten_content.ilike.%${query}%`)
+      .or(`original_title.ilike.%${query}%,summary.ilike.%${query}%,content.ilike.%${query}%,rewritten_title.ilike.%${query}%`)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -134,9 +134,9 @@ export async function searchArticles(query: string): Promise<Article[]> {
 
     return (data || [])
       .filter(article => {
-        const title = article.rewritten_title || article.title;
-        const summary = article.rewritten_summary || article.summary;
-        const content = article.rewritten_content || article.content;
+        const title = article.rewritten_title || article.original_title;
+        const summary = article.summary;
+        const content = article.content;
         return article && title && summary && content && title.trim() !== '' && summary.trim() !== '' && content.trim() !== '';
       })
       .map(transformArticle);
@@ -165,9 +165,9 @@ export async function getRelatedArticles(currentArticle: Article, limit: number 
 
     return (data || [])
       .filter(article => {
-        const title = article.rewritten_title || article.title;
-        const summary = article.rewritten_summary || article.summary;
-        const content = article.rewritten_content || article.content;
+        const title = article.rewritten_title || article.original_title;
+        const summary = article.summary;
+        const content = article.content;
         return article && title && summary && content && title.trim() !== '' && summary.trim() !== '' && content.trim() !== '';
       })
       .map(transformArticle);

@@ -2,8 +2,7 @@
 
 import Link from 'next/link';
 import { Category } from '@/lib/types';
-import { getCategories } from '@/lib/articles';
-import { useEffect, useState } from 'react';
+import { useArticles } from '@/contexts/ArticlesContext';
 
 interface CategoryListProps {
   title?: string;
@@ -16,25 +15,12 @@ const CategoryList = ({
   title = 'Categories', 
   showCount = true, 
   className = '',
-  currentCategory
-}: CategoryListProps) => {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const data = await getCategories();
-        setCategories(data);
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCategories();
-  }, []);
+  currentCategory,
+  categories: propCategories
+}: CategoryListProps & { categories?: Category[] }) => {
+  const context = useArticles();
+  const categories = propCategories || context?.categories || [];
+  const loading = context?.loading || false;
 
   if (loading) {
     return (
