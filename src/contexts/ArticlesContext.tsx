@@ -102,6 +102,7 @@ export function ArticlesProvider({ children }: ArticlesProviderProps) {
           id: name.toLowerCase().replace(/\s+/g, '-'),
           name,
           slug: name.toLowerCase().replace(/\s+/g, '-'),
+          description: `${name} news and updates`,
           count
         }))
         .sort((a, b) => b.count - a.count);

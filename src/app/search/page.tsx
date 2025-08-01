@@ -51,7 +51,7 @@ function SearchContent() {
         article.excerpt.toLowerCase().includes(query) ||
         article.content?.toLowerCase().includes(query) ||
         article.tags?.some(tag => tag.toLowerCase().includes(query)) ||
-        article.categories?.some(cat => cat.name.toLowerCase().includes(query))
+        article.categories?.some(cat => cat.toLowerCase().includes(query))
       );
       
       // Sort results based on selected option

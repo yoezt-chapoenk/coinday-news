@@ -24,6 +24,7 @@ export interface Article {
   author: string;
   publishedAt: string;
   category: string;
+  categories: string[]; // Array of category names from database
   tags: string[];
   image_url: string;
   readTime: number;
@@ -107,6 +108,7 @@ export function transformArticle(article: NewsArticle): Article {
     author: article.source || 'Coinday Team',
     publishedAt: article.published_date || article.created_at,
     category: categories[0] || 'General',
+    categories: categories, // Array of category names from database
     tags: categories,
     image_url: finalImageUrl,
     readTime,
