@@ -10,6 +10,15 @@ interface ArticleContentProps {
 const ArticleContent: React.FC<ArticleContentProps> = ({ content, className = '' }) => {
   // Function to render content with proper paragraph separation
   const renderContent = () => {
+    // Always check if content is defined before running any string operations
+    if (!content || typeof content !== 'string') {
+      return (
+        <div className={`prose prose-lg prose-invert max-w-none ${className}`}>
+          <p className="text-gray-400">No content available.</p>
+        </div>
+      );
+    }
+    
     // Check if content contains HTML tags
     const hasHtmlTags = /<[^>]*>/g.test(content);
     
