@@ -4,6 +4,8 @@ import './globals.css'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { ArticlesProvider } from '@/contexts/ArticlesContext'
+import { SpeedInsights } from '@vercel/speed-insights/next'
+import { Analytics } from '@vercel/analytics/react'
 
 export const metadata: Metadata = {
   title: 'Coinday - Latest News & Updates',
@@ -67,6 +69,8 @@ export default function RootLayout({
           </main>
           <Footer />
         </ArticlesProvider>
+        <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   )
