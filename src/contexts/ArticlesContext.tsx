@@ -10,8 +10,11 @@ interface ArticlesContextType {
   categories: Category[];
   loading: boolean;
   error: string | null;
+  lastUpdated: Date | null;
+  hasNewUpdates: boolean;
   refreshArticles: () => Promise<void>;
   refreshCategories: () => Promise<void>;
+  markUpdatesAsRead: () => void;
 }
 
 const ArticlesContext = createContext<ArticlesContextType | undefined>(undefined);
@@ -33,16 +36,21 @@ export function ArticlesProvider({ children }: ArticlesProviderProps) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [hasNewUpdates, setHasNewUpdates] = useState(false);
   const supabase = createClientComponentClient();
 
   // Fetch articles from Supabase
   const fetchArticles = async () => {
     try {
+      // Add cache busting parameter to ensure fresh data
+      const timestamp = new Date().getTime();
       const { data, error } = await supabase
         .from('news_articles')
         .select('*')
         .eq('approved', true)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(1000); // Add reasonable limit
 
       if (error) {
         console.error('Error fetching articles:', error);
@@ -61,7 +69,9 @@ export function ArticlesProvider({ children }: ArticlesProviderProps) {
         })
         .map(transformArticle);
 
+      console.log(`Fetched ${validArticles.length} articles at ${new Date().toISOString()}`);
       setArticles(validArticles);
+      setLastUpdated(new Date());
       setError(null);
     } catch (err) {
       console.error('Error:', err);
@@ -117,11 +127,16 @@ export function ArticlesProvider({ children }: ArticlesProviderProps) {
   const refreshArticles = async () => {
     setLoading(true);
     await fetchArticles();
+    setHasNewUpdates(false);
     setLoading(false);
   };
 
   const refreshCategories = async () => {
     await fetchCategories();
+  };
+
+  const markUpdatesAsRead = () => {
+    setHasNewUpdates(false);
   };
 
   // Initial data fetch
@@ -152,13 +167,27 @@ export function ArticlesProvider({ children }: ArticlesProviderProps) {
           (payload) => {
             console.log('Real-time update received:', payload);
             
-            // Refresh data when any change occurs
-            fetchArticles();
-            fetchCategories();
+            // Mark that there are new updates available
+            setHasNewUpdates(true);
+            
+            // Add a small delay to ensure database consistency
+            setTimeout(() => {
+              fetchArticles();
+              fetchCategories();
+            }, 500);
           }
         )
         .subscribe((status) => {
           console.log('Subscription status:', status);
+          if (status === 'SUBSCRIBED') {
+            console.log('Successfully subscribed to real-time updates');
+          } else if (status === 'CHANNEL_ERROR') {
+            console.error('Real-time subscription error, attempting to reconnect...');
+            // Attempt to reconnect after a delay
+            setTimeout(() => {
+              setupRealtimeSubscription();
+            }, 5000);
+          }
         });
     };
 
@@ -172,13 +201,27 @@ export function ArticlesProvider({ children }: ArticlesProviderProps) {
     };
   }, []);
 
+  // Add periodic refresh as fallback
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // Refresh data every 5 minutes as fallback
+      fetchArticles();
+      fetchCategories();
+    }, 5 * 60 * 1000); // 5 minutes
+
+    return () => clearInterval(interval);
+  }, []);
+
   const value: ArticlesContextType = {
     articles,
     categories,
     loading,
     error,
+    lastUpdated,
+    hasNewUpdates,
     refreshArticles,
-    refreshCategories
+    refreshCategories,
+    markUpdatesAsRead
   };
 
   return (

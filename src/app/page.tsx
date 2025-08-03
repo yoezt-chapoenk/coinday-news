@@ -1,6 +1,10 @@
 import { Metadata } from 'next';
 import HomePage from '@/components/HomePage';
 
+// Force dynamic rendering to ensure fresh data
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: 'Coinday - Latest News & Updates',
   description: 'Stay updated with the latest news and trending stories from around the world. Your trusted source for breaking news, analysis, and insights.',
