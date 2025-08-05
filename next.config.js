@@ -20,7 +20,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'oaidalleapiprodscus.blob.core.windows.net',
+        hostname: 'ik.imagekit.io',
       },
     ],
     // Add unoptimized for external domains that might have issues
