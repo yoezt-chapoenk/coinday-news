@@ -18,6 +18,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'cdn.sanity.io',
       },
+      {
+        protocol: 'https',
+        hostname: 'oaidalleapiprodscus.blob.core.windows.net',
+      },
     ],
     // Add unoptimized for external domains that might have issues
     unoptimized: false,
